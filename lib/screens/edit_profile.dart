@@ -65,21 +65,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   Navigator.of(context).pop();
                 },
                 child: Container(
+                  width: 98,
+                  height: 98,
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
+                    shape: BoxShape.circle,
                     border: Border.all(
                       color: selected
                           ? AppColors.primaryAccent
                           : AppColors.transparent,
-                      width: 2,
+                      width: 4,
                     ),
-                    borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Image.asset(
-                    option,
-                    width: 90,
-                    height: 90,
-                    fit: BoxFit.contain,
+                  child: ClipOval(
+                    child: Image.asset(
+                      option,
+                      width: 90,
+                      height: 90,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               );
@@ -112,9 +116,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (success) {
       Navigator.of(context).pop();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to save profile.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Unable to save profile.')));
     }
   }
 
@@ -138,7 +142,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left, color: AppColors.primaryAccent, size: 40),
+          icon: const Icon(
+            Icons.chevron_left,
+            color: AppColors.primaryAccent,
+            size: 40,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
@@ -169,14 +177,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       height: 120,
                       decoration: BoxDecoration(
                         color: AppColors.cardBackground,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
-                        child: Image.asset(
-                          _selectedAvatar,
-                          fit: BoxFit.cover,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppColors.primaryAccent,
+                          width: 4,
                         ),
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(_selectedAvatar, fit: BoxFit.cover),
                       ),
                     ),
                     const SizedBox(height: 12),

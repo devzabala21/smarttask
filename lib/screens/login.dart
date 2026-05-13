@@ -33,7 +33,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleContinue() {
     
-    if (_emailController.text.isNotEmpty && _emailController.text.contains('@')) {
+    if (_emailController.text.isEmpty) {
+      setState(() => _emailError = "Please enter email");
+      return;
+    }
+    
+    if (_emailController.text.contains('@')) {
       setState(() => _emailError = null);
       _pageController.nextPage(
         duration: const Duration(milliseconds: 400),
@@ -191,6 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildPasswordStep() {
+    bool isPasswordValid = _passwordController.text.length >= 8;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -198,6 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
           label: 'Password', 
           obscureText: true,
           controller: _passwordController,
+          onChanged: (_) => setState(() {}),
         ),
         const SizedBox(height: 16),
         Text(
@@ -212,7 +219,8 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 23),
         AppBtnCustom(
           label: 'Login',
-          onPressed: _handleLogin,
+          color: isPasswordValid ? AppColors.primaryAccent : Colors.grey,
+          onPressed: isPasswordValid ? _handleLogin : null,
         ),
         const SizedBox(height: 16),
         TextButton(

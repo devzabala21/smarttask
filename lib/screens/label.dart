@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../core/app_colors.dart';
 import '../core/label_service.dart';
 import '../widgets/app_btn_add.dart';
@@ -15,11 +15,7 @@ class _LabelScreenState extends State<LabelScreen> {
     final result = await showAddLabelDialog(context);
     if (result != null) {
       setState(() {
-        LabelService.addLabel(
-          result['name'],
-          result['isDefault'],
-          result['color'],
-        );
+        LabelService.addLabel(result['name'], result['isDefault'], result['color']);
       });
     }
   }
@@ -209,47 +205,19 @@ Future<Map<String, dynamic>?> showAddLabelDialog(
                 });
               },
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Checkbox(
-                  value: isDefault,
-                  onChanged: (value) {
-                    setState(() {
-                      isDefault = value ?? false;
-                    });
-                  },
-                ),
-                const Text('Default', style: TextStyle(fontFamily: 'Lora')),
-                const Spacer(),
-                Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: selectedColor,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  '*',
-                  style: TextStyle(color: Colors.red, fontSize: 16),
-                ),
-              ],
-            ),
             const SizedBox(height: 16),
             const Text(
               'Color',
               style: TextStyle(
                 fontFamily: 'Lora',
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Wrap(
-              spacing: 10,
-              runSpacing: 10,
+              spacing: 8,
+              runSpacing: 8,
               children: LabelService.availableColors.map((color) {
                 final isSelected = selectedColor == color;
                 return GestureDetector(
@@ -263,49 +231,71 @@ Future<Map<String, dynamic>?> showAddLabelDialog(
                     height: 40,
                     decoration: BoxDecoration(
                       color: color,
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(20),
                       border: isSelected
-                          ? Border.all(color: Colors.black, width: 2.5)
+                          ? Border.all(color: Colors.black, width: 3)
                           : null,
                     ),
-                    child: isSelected
-                        ? const Center(
-                            child: Icon(
-                              Icons.check,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          )
-                        : null,
                   ),
                 );
               }).toList(),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Checkbox(
+                  value: isDefault,
+                  onChanged: (value) {
+                    setState(() {
+                      isDefault = value ?? false;
+                    });
+                  },
+                ),
+                const Text(
+                  'Set as default',
+                  style: TextStyle(
+                    fontFamily: 'Lora',
+                    fontSize: 16,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                fontFamily: 'Lora',
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: isValid
-                ? () {
-                    Navigator.of(context).pop({
+                ? () => Navigator.of(context).pop({
                       'name': nameController.text.trim(),
                       'isDefault': isDefault,
                       'color': selectedColor,
-                    });
-                  }
+                    })
                 : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: isValid
-                  ? AppColors.primaryAccent
-                  : Colors.grey.shade400,
-              disabledBackgroundColor: Colors.grey.shade400,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.primaryAccent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
-            child: Text(initialName == null ? 'Add' : 'Save'),
+            child: Text(
+              initialName == null ? 'Add' : 'Save',
+              style: const TextStyle(
+                fontFamily: 'Lora',
+                fontSize: 16,
+                color: Colors.white,
+              ),
+            ),
           ),
         ],
       ),
@@ -323,7 +313,7 @@ Future<bool?> showDeleteConfirmationDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Center(
         child: Text(
-          'Delete Label?',
+          'Delete Label',
           style: const TextStyle(
             fontFamily: 'Aclonica',
             fontSize: 20,
@@ -331,67 +321,41 @@ Future<bool?> showDeleteConfirmationDialog(
           ),
         ),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'This label will be deleted permanently.',
-            style: const TextStyle(
+      content: Text(
+        'Are you sure you want to delete "$labelName"?',
+        style: const TextStyle(
+          fontFamily: 'Lora',
+          fontSize: 16,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text(
+            'Cancel',
+            style: TextStyle(
               fontFamily: 'Lora',
               fontSize: 16,
               color: Colors.grey,
             ),
-            textAlign: TextAlign.center,
           ),
-        ],
-      ),
-      actions: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF6E244B)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 16,
-                    color: Color(0xFF6E244B),
-                  ),
-                ),
-              ),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6E244B),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text(
-                  'Delete',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+          ),
+          child: const Text(
+            'Delete',
+            style: TextStyle(
+              fontFamily: 'Lora',
+              fontSize: 16,
+              color: Colors.white,
             ),
-          ],
+          ),
         ),
       ],
     ),

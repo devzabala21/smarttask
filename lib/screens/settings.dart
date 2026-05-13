@@ -11,12 +11,13 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _allowNotifications = true;
   final TextEditingController _changePasswordController =
       TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _contactNumberController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _changePasswordController.dispose();
     _confirmPasswordController.dispose();
     _emailController.dispose();
+    _contactNumberController.dispose();
     super.dispose();
   }
 
@@ -75,22 +77,123 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              TextField(
-                controller: _emailController,
-                enabled: false,
-                decoration: const InputDecoration(
-                  hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF6E244B), width: 2),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _emailController,
+                      enabled: false,
+                      decoration: const InputDecoration(
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xFF6E244B),
+                            width: 2,
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xFF6E244B),
+                            width: 2,
+                          ),
+                        ),
+                        disabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xFF6E244B),
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      cursorColor: const Color(0xFF6E244B),
+                    ),
                   ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF6E244B), width: 2),
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    height: 42,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryAccent,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                      ),
+                      child: const Text(
+                        'Update',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
-                  disabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF6E244B), width: 2),
-                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Contact Number
+              const Text(
+                'Contact Number',
+                style: TextStyle(
+                  fontFamily: 'Lora',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
-                cursorColor: const Color(0xFF6E244B),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _contactNumberController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter contact number',
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xFF6E244B),
+                            width: 2,
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xFF6E244B),
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      cursorColor: const Color(0xFF6E244B),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    height: 42,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryAccent,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                      ),
+                      child: const Text(
+                        'Update',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               // Change Password
@@ -103,20 +206,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              TextField(
-                controller: _changePasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  hintText: 'Enter new password',
-                  hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF6E244B), width: 2),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _changePasswordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter new password',
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xFF6E244B),
+                            width: 2,
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xFF6E244B),
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      cursorColor: const Color(0xFF6E244B),
+                    ),
                   ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF6E244B), width: 2),
-                  ),
-                ),
-                cursorColor: const Color(0xFF6E244B),
+                  const SizedBox(width: 12),
+                  const SizedBox(width: 92),
+                ],
               ),
               const SizedBox(height: 20),
               // Confirm New Password
@@ -129,65 +247,109 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              TextField(
-                controller: _confirmPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  hintText: 'Confirm new password',
-                  hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF6E244B), width: 2),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF6E244B), width: 2),
-                  ),
-                ),
-                cursorColor: const Color(0xFF6E244B),
-              ),
-              const SizedBox(height: 20),
-              // Allow Notifications
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  const Text(
-                    'Allow Notifications',
-                    style: TextStyle(
-                      fontFamily: 'Lora',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                  Expanded(
+                    child: TextField(
+                      controller: _confirmPasswordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        hintText: 'Confirm new password',
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xFF6E244B),
+                            width: 2,
+                          ),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xFF6E244B),
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      cursorColor: const Color(0xFF6E244B),
                     ),
                   ),
-                  Switch(
-                    value: _allowNotifications,
-                    onChanged: (value) {
-                      setState(() {
-                        _allowNotifications = value;
-                      });
-                    },
-                    activeThumbColor: AppColors.primaryAccent,
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    height: 42,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryAccent,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                      ),
+                      child: const Text(
+                        'Update',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 20),
-              // Terms and Conditions
-              GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const EulaScreen()),
-                  );
-                },
-                child: const Text(
-                  'Terms and Conditions',
-                  style: TextStyle(
-                    fontFamily: 'Lora',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF6E244B),
-                    decoration: TextDecoration.underline,
-                  ),
+              // Legal Links
+              Center(
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const EulaScreen(data: AppLegalContent.terms),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Terms and Conditions',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Lora',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF6E244B),
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const EulaScreen(data: AppLegalContent.policy),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Privacy Policy',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Lora',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF6E244B),
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
               // Delete Account
               SizedBox(
                 width: double.infinity,
