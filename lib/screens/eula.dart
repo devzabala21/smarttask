@@ -15,7 +15,8 @@ class EulaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final content = data ??
+    final content =
+        data ??
         const EulaContent(
           title: 'Terms and Conditions',
           content: '''
@@ -37,7 +38,7 @@ We may update these terms at any time.
 For questions, contact support@smarttask.com.
 ''',
         );
-        
+
     return Scaffold(
       body: Container(
         width: double.infinity,

@@ -32,12 +32,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleContinue() {
-    
     if (_emailController.text.isEmpty) {
       setState(() => _emailError = "Please enter email");
       return;
     }
-    
+
     if (_emailController.text.contains('@')) {
       setState(() => _emailError = null);
       _pageController.nextPage(
@@ -51,13 +50,13 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _handleLogin() {
-
-    bool isSuccess = AuthService.login(
-      _emailController.text, 
-      _passwordController.text
+  Future<void> _handleLogin() async {
+    final bool isSuccess = await AuthService.login(
+      _emailController.text,
+      _passwordController.text,
     );
 
+    if (!mounted) return;
     if (isSuccess) {
       setState(() => _passwordError = null);
       Navigator.pushReplacementNamed(context, AppRouter.onboarding);
@@ -104,11 +103,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Text(
                           "Welcome Back!",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontFamily: 'GreatVibes', fontSize: 50),
+                          style: TextStyle(
+                            fontFamily: 'GreatVibes',
+                            fontSize: 50,
+                          ),
                         ),
                         const SizedBox(height: 30),
                         const AppLogoCustom(size: 150),
-                        
+
                         const Spacer(),
 
                         SizedBox(
@@ -116,10 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: PageView(
                             controller: _pageController,
                             physics: const NeverScrollableScrollPhysics(),
-                            children: [
-                              _buildEmailStep(),
-                              _buildPasswordStep(),
-                            ],
+                            children: [_buildEmailStep(), _buildPasswordStep()],
                           ),
                         ),
 
@@ -128,10 +127,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 40),
                         RichText(
                           text: const TextSpan(
-                            style: TextStyle(fontFamily: 'Aclonica', fontSize: 16, color: AppColors.primaryAccent),
+                            style: TextStyle(
+                              fontFamily: 'Aclonica',
+                              fontSize: 16,
+                              color: AppColors.primaryAccent,
+                            ),
                             children: [
                               TextSpan(text: "Smart"),
-                              TextSpan(text: "Task", style: TextStyle(color: Colors.black)),
+                              TextSpan(
+                                text: "Task",
+                                style: TextStyle(color: Colors.black),
+                              ),
                             ],
                           ),
                         ),
@@ -152,10 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AppTxtFldCustom(
-          label: 'Email',
-          controller: _emailController,
-        ),
+        AppTxtFldCustom(label: 'Email', controller: _emailController),
         const SizedBox(height: 16),
         Text(
           _emailError ?? "",
@@ -167,10 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        AppBtnCustom(
-          label: 'Continue',
-          onPressed: _handleContinue,
-        ),
+        AppBtnCustom(label: 'Continue', onPressed: _handleContinue),
         const SizedBox(height: 16),
         _buildDivider(),
         const SizedBox(height: 16),
@@ -201,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AppTxtFldCustom(
-          label: 'Password', 
+          label: 'Password',
           obscureText: true,
           controller: _passwordController,
           onChanged: (_) => setState(() {}),
@@ -225,7 +225,10 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 16),
         TextButton(
           onPressed: _previousPage,
-          child: const Text("Use a different email", style: TextStyle(color: Colors.grey)),
+          child: const Text(
+            "Use a different email",
+            style: TextStyle(color: Colors.grey),
+          ),
         ),
         const SizedBox(height: 16),
         const Text(
@@ -258,13 +261,21 @@ class _LoginScreenState extends State<LoginScreen> {
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-        style: const TextStyle(fontFamily: 'Inter', fontSize: 14, color: Colors.black),
+        style: const TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 14,
+          color: Colors.black,
+        ),
         children: [
           const TextSpan(text: "New here? "),
           TextSpan(
             text: "Sign Up",
-            style: const TextStyle(color: AppColors.secondaryAccent, fontWeight: FontWeight.bold),
-            recognizer: TapGestureRecognizer()..onTap = () => Navigator.pushNamed(context, AppRouter.signin),
+            style: const TextStyle(
+              color: AppColors.secondaryAccent,
+              fontWeight: FontWeight.bold,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () => Navigator.pushNamed(context, AppRouter.signin),
           ),
         ],
       ),

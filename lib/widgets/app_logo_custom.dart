@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 class AppLogoCustom extends StatelessWidget {
   final double size;
 
-  const AppLogoCustom({
-    super.key,
-    this.size = 150.0,
-  });
+  const AppLogoCustom({super.key, this.size = 150.0});
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +18,11 @@ class AppLogoCustom extends StatelessWidget {
               'assets/icons/icon_logo.png',
               height: size,
               width: size,
-              color: Colors.black.withOpacity(0.4),
+              color: Colors.black.withValues(alpha: 0.4),
             ),
           ),
         ),
-        Image.asset(
-          'assets/icons/icon_logo.png',
-          height: size,
-          width: size,
-        ),
+        Image.asset('assets/icons/icon_logo.png', height: size, width: size),
       ],
     );
   }

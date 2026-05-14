@@ -24,7 +24,9 @@ class SideMenuOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final String username = AuthService.currentUser?.username ?? "Guest";
     final String email = AuthService.currentUser?.email ?? "No Email Provided";
-    final String avatar = AuthService.currentUser?.avatarPath ?? AuthService.avatarOptions.first;
+    final String avatar = AuthService.currentUser != null
+        ? AuthService.avatarAssetForIndex(AuthService.currentUser!.iconIndex)
+        : AuthService.avatarOptions.first;
     final EdgeInsets systemPadding = MediaQuery.of(context).padding;
 
     return AnimatedBuilder(
@@ -37,7 +39,7 @@ class SideMenuOverlay extends StatelessWidget {
               GestureDetector(
                 onTap: onClose,
                 child: Container(
-                  color: AppColors.black.withOpacity(animation.value * 0.3),
+                  color: AppColors.black.withValues(alpha: animation.value * 0.3),
                 ),
               ),
 
@@ -74,7 +76,7 @@ class SideMenuOverlay extends StatelessWidget {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.black.withOpacity(0.15),
+                                  color: AppColors.black.withValues(alpha: 0.15),
                                   blurRadius: 20,
                                   offset: const Offset(-5, 0),
                                 ),
@@ -150,7 +152,8 @@ class SideMenuOverlay extends StatelessWidget {
                                           onClose();
                                           await Navigator.of(context).push(
                                             MaterialPageRoute(
-                                              builder: (_) => const EditProfileScreen(),
+                                              builder: (_) =>
+                                                  const EditProfileScreen(),
                                             ),
                                           );
                                           onProfileUpdated();

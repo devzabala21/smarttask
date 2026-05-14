@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import '../router/app_router.dart';
 import '../core/app_colors.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FlutterNativeSplash.remove();
 
   runApp(const MyApp());
 }
@@ -14,21 +17,19 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-   @override
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'SmartTask',
-      
+
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryAccent),
         useMaterial3: true,
       ),
 
-    initialRoute: AppRouter.defaultRoute,
-    onGenerateRoute: AppRouter.generateRoute,
-    
+      initialRoute: AppRouter.defaultRoute,
+      onGenerateRoute: AppRouter.generateRoute,
     );
   }
-
 }

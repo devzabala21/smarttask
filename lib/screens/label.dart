@@ -1,5 +1,6 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../core/app_colors.dart';
+import '../core/auth_service.dart';
 import '../core/label_service.dart';
 import '../widgets/app_btn_add.dart';
 
@@ -14,9 +15,15 @@ class _LabelScreenState extends State<LabelScreen> {
   void _openAddLabelDialog() async {
     final result = await showAddLabelDialog(context);
     if (result != null) {
-      setState(() {
-        LabelService.addLabel(result['name'], result['isDefault'], result['color']);
-      });
+      final userId = AuthService.currentUser?.uid;
+      if (userId == null) return;
+      await LabelService.addLabel(
+        userId,
+        result['name'],
+        result['isDefault'],
+        result['colorIndex'],
+      );
+      setState(() {});
     }
   }
 
@@ -29,14 +36,16 @@ class _LabelScreenState extends State<LabelScreen> {
       initialColor: label.color,
     );
     if (result != null) {
-      setState(() {
-        LabelService.editLabel(
-          index,
-          result['name'],
-          result['isDefault'],
-          result['color'],
-        );
-      });
+      final userId = AuthService.currentUser?.uid;
+      if (userId == null) return;
+      await LabelService.editLabel(
+        userId,
+        index,
+        result['name'],
+        result['isDefault'],
+        result['colorIndex'],
+      );
+      setState(() {});
     }
   }
 
@@ -44,9 +53,10 @@ class _LabelScreenState extends State<LabelScreen> {
     final label = LabelService.labels[index];
     final result = await showDeleteConfirmationDialog(context, label.name);
     if (result == true) {
-      setState(() {
-        LabelService.deleteLabel(index);
-      });
+      final userId = AuthService.currentUser?.uid;
+      if (userId == null) return;
+      await LabelService.deleteLabel(userId, index);
+      setState(() {});
     }
   }
 
@@ -167,7 +177,9 @@ Future<Map<String, dynamic>?> showAddLabelDialog(
     text: initialName,
   );
   bool isDefault = initialDefault ?? false;
-  Color selectedColor = initialColor ?? LabelService.availableColors[0];
+  int selectedColorIndex = initialColor != null
+      ? LabelService.availableColors.indexOf(initialColor)
+      : 0;
   bool isValid =
       initialName != null &&
       initialName.length >= 4 &&
@@ -218,12 +230,16 @@ Future<Map<String, dynamic>?> showAddLabelDialog(
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: LabelService.availableColors.map((color) {
-                final isSelected = selectedColor == color;
+              children: LabelService.availableColors.asMap().entries.map((
+                entry,
+              ) {
+                final color = entry.value;
+                final index = entry.key;
+                final isSelected = selectedColorIndex == index;
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedColor = color;
+                      selectedColorIndex = index;
                     });
                   },
                   child: Container(
@@ -253,10 +269,7 @@ Future<Map<String, dynamic>?> showAddLabelDialog(
                 ),
                 const Text(
                   'Set as default',
-                  style: TextStyle(
-                    fontFamily: 'Lora',
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(fontFamily: 'Lora', fontSize: 16),
                 ),
               ],
             ),
@@ -277,10 +290,10 @@ Future<Map<String, dynamic>?> showAddLabelDialog(
           ElevatedButton(
             onPressed: isValid
                 ? () => Navigator.of(context).pop({
-                      'name': nameController.text.trim(),
-                      'isDefault': isDefault,
-                      'color': selectedColor,
-                    })
+                    'name': nameController.text.trim(),
+                    'isDefault': isDefault,
+                    'colorIndex': selectedColorIndex,
+                  })
                 : null,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryAccent,
@@ -323,10 +336,7 @@ Future<bool?> showDeleteConfirmationDialog(
       ),
       content: Text(
         'Are you sure you want to delete "$labelName"?',
-        style: const TextStyle(
-          fontFamily: 'Lora',
-          fontSize: 16,
-        ),
+        style: const TextStyle(fontFamily: 'Lora', fontSize: 16),
       ),
       actions: [
         TextButton(

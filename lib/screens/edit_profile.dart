@@ -12,7 +12,7 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController _nicknameController;
   late final TextEditingController _bioController;
-  late String _selectedAvatar;
+  late int _selectedAvatarIndex;
 
   @override
   void initState() {
@@ -20,7 +20,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final user = AuthService.currentUser;
     _nicknameController = TextEditingController(text: user?.username ?? '');
     _bioController = TextEditingController(text: user?.bio ?? '');
-    _selectedAvatar = user?.avatarPath ?? AuthService.avatarOptions.first;
+    _selectedAvatarIndex = user?.iconIndex ?? 0;
   }
 
   @override
@@ -57,11 +57,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           content: Wrap(
             spacing: 12,
             runSpacing: 12,
-            children: AuthService.avatarOptions.map((option) {
-              final bool selected = _selectedAvatar == option;
+            children: AuthService.avatarOptions.asMap().entries.map((entry) {
+              final option = entry.value;
+              final index = entry.key;
+              final bool selected = _selectedAvatarIndex == index;
               return GestureDetector(
                 onTap: () {
-                  setState(() => _selectedAvatar = option);
+                  setState(() => _selectedAvatarIndex = index);
                   Navigator.of(context).pop();
                 },
                 child: Container(
@@ -94,7 +96,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  void _saveProfile() {
+  Future<void> _saveProfile() async {
     final nickname = _nicknameController.text.trim();
     final bio = _bioController.text.trim();
 
@@ -107,12 +109,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
 
-    final success = AuthService.updateProfile(
+    final success = await AuthService.updateProfile(
       username: nickname,
       bio: bio,
-      avatarPath: _selectedAvatar,
+      iconIndex: _selectedAvatarIndex,
     );
 
+    if (!mounted) return;
     if (success) {
       Navigator.of(context).pop();
     } else {
@@ -184,7 +187,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
                       child: ClipOval(
-                        child: Image.asset(_selectedAvatar, fit: BoxFit.cover),
+                        child: Image.asset(
+                          AuthService.avatarAssetForIndex(_selectedAvatarIndex),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 12),

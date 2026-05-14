@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../core/app_colors.dart';
 import '../core/auth_service.dart';
 import '../core/label_service.dart';
+import '../core/task_service.dart';
+import '../models/task_model.dart';
 import '../widgets/app_btn_cat.dart';
 import '../widgets/app_btn_add.dart';
 import '../widgets/add_task_modal.dart';
@@ -43,26 +45,31 @@ class _HomeScreenState extends State<HomeScreen>
     return cats;
   }
 
-  final List<TaskData> _tasks = [
-    TaskData(
-      title: 'Sample Task Title',
-      description: 'This is a brief description of the task.',
-      label: 'Work',
-    ),
-    TaskData(
-      title: 'Weekly Review',
-      description: 'Review your notes and update your project plan.',
-      label: 'Personal',
-    ),
-  ];
+  List<TaskData> _tasks = [];
+  List<TaskData> _archivedTasks = [];
 
-  final List<TaskData> _archivedTasks = [];
+  Future<void> _loadData() async {
+    final currentUser = AuthService.currentUser;
+    if (currentUser == null) return;
+
+    await LabelService.loadLabelsForUser(currentUser.uid);
+    final tasks = await TaskService.loadTasksForUser(currentUser.uid);
+
+    setState(() {
+      _tasks = tasks.where((task) => !task.archived).toList();
+      _archivedTasks = tasks.where((task) => task.archived).toList();
+    });
+  }
 
   Future<void> _openAddTaskDialog() async {
     final TaskData? newTask = await showAddTaskDialog(context);
     if (newTask != null) {
+      final userId = AuthService.currentUser?.uid;
+      if (userId == null) return;
+
+      final savedTask = await TaskService.addTask(userId, newTask);
       setState(() {
-        _tasks.insert(0, newTask);
+        _tasks.insert(0, savedTask);
       });
     }
   }
@@ -70,10 +77,19 @@ class _HomeScreenState extends State<HomeScreen>
   Future<void> _editTask(TaskData task) async {
     final TaskData? updatedTask = await showEditTaskDialog(context, task);
     if (updatedTask != null) {
+      final userId = AuthService.currentUser?.uid;
+      if (userId == null) return;
+
+      final updated = task.copyWith(
+        title: updatedTask.title,
+        description: updatedTask.description,
+      );
+
+      await TaskService.updateTask(userId, updated);
       setState(() {
         final index = _tasks.indexOf(task);
         if (index != -1) {
-          _tasks[index] = updatedTask;
+          _tasks[index] = updated;
         }
       });
     }
@@ -82,9 +98,14 @@ class _HomeScreenState extends State<HomeScreen>
   Future<void> _archiveTask(TaskData task) async {
     final bool? confirm = await _showArchiveConfirmationDialog();
     if (confirm == true) {
+      final userId = AuthService.currentUser?.uid;
+      if (userId == null) return;
+
+      final archivedTask = task.copyWith(archived: true);
+      await TaskService.updateTask(userId, archivedTask);
       setState(() {
         _tasks.remove(task);
-        _archivedTasks.add(task);
+        _archivedTasks.insert(0, archivedTask);
       });
     }
   }
@@ -176,11 +197,16 @@ class _HomeScreenState extends State<HomeScreen>
       MaterialPageRoute(
         builder: (context) => ArchiveScreen(
           archivedTasks: _archivedTasks,
-          onRestore: (task) {
-            setState(() {
-              _archivedTasks.remove(task);
-              _tasks.insert(0, task);
-            });
+          onRestore: (task) async {
+            final userId = AuthService.currentUser?.uid;
+            if (userId != null) {
+              final restoredTask = task.copyWith(archived: false);
+              await TaskService.updateTask(userId, restoredTask);
+              setState(() {
+                _archivedTasks.remove(task);
+                _tasks.insert(0, restoredTask);
+              });
+            }
           },
         ),
       ),
@@ -305,6 +331,7 @@ class _HomeScreenState extends State<HomeScreen>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
+    _loadData();
   }
 
   @override
@@ -358,7 +385,11 @@ class _HomeScreenState extends State<HomeScreen>
                               radius: 35,
                               backgroundColor: Colors.white,
                               backgroundImage: AssetImage(
-                                AuthService.currentUser?.avatarPath ?? AuthService.avatarOptions.first,
+                                AuthService.currentUser != null
+                                    ? AuthService.avatarAssetForIndex(
+                                        AuthService.currentUser!.iconIndex,
+                                      )
+                                    : AuthService.avatarOptions.first,
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -450,13 +481,18 @@ class _HomeScreenState extends State<HomeScreen>
                             final selectedLabel =
                                 await _showLabelSelectionDialog();
                             if (selectedLabel != null) {
+                              final userId = AuthService.currentUser?.uid;
+                              if (userId == null) return;
+
+                              final updatedTask = task.copyWith(
+                                label: selectedLabel,
+                              );
+                              await TaskService.updateTask(userId, updatedTask);
                               setState(() {
                                 final taskIndex = _tasks.indexOf(task);
-                                _tasks[taskIndex] = TaskData(
-                                  title: task.title,
-                                  description: task.description,
-                                  label: selectedLabel,
-                                );
+                                if (taskIndex != -1) {
+                                  _tasks[taskIndex] = updatedTask;
+                                }
                               });
                             }
                           },

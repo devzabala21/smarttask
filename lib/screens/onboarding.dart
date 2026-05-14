@@ -67,13 +67,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     _buildPageContent(
                       imagePath: 'assets/img/img_ob1.png',
                       title: 'Stay on track,\none task at a time.',
-                      subtitle: 'Plan your schoolwork and daily tasks with ease.',
+                      subtitle:
+                          'Plan your schoolwork and daily tasks with ease.',
                       isSecondPage: false,
                     ),
                     _buildPageContent(
                       imagePath: 'assets/img/img_ob2.png',
                       title: 'Organize. Focus. Finish.',
-                      subtitle: 'Create to-do lists and manage tasks anytime,\nanywhere.',
+                      subtitle:
+                          'Create to-do lists and manage tasks anytime,\nanywhere.',
                       isSecondPage: true,
                     ),
                   ],
@@ -102,10 +104,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Center(
               child: FractionallySizedBox(
                 widthFactor: isSecondPage ? 0.7 : 0.9,
-                child: Image.asset(
-                  imagePath,
-                  fit: BoxFit.contain,
-                ),
+                child: Image.asset(imagePath, fit: BoxFit.contain),
               ),
             ),
           ),
@@ -152,7 +151,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               AnimatedContainer(
                 duration: const Duration(milliseconds: 350),
                 curve: Curves.easeInOut,
-                width: _currentPage == 0 ? 120 : 180, 
+                width: _currentPage == 0 ? 120 : 180,
                 child: AppBtnCustom(
                   label: _currentPage == 0 ? 'Next' : 'Get Started',
                   color: AppColors.primaryAccent,
@@ -201,7 +200,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
         children: [
           TextSpan(text: "Smart"),
-          TextSpan(text: "Task", style: TextStyle(color: Colors.black)),
+          TextSpan(
+            text: "Task",
+            style: TextStyle(color: Colors.black),
+          ),
         ],
       ),
     );

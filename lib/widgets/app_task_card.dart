@@ -53,7 +53,9 @@ class AppTaskCard extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'Lora',
                     fontSize: 14,
-                    color: labelColor != null ? AppColors.white : AppColors.black,
+                    color: labelColor != null
+                        ? AppColors.white
+                        : AppColors.black,
                   ),
                 ),
               ),

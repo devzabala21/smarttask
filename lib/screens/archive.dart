@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../core/app_colors.dart';
 import '../core/label_service.dart';
-import '../widgets/add_task_modal.dart';
+import '../models/task_model.dart';
 
 class ArchiveScreen extends StatefulWidget {
   final List<TaskData> archivedTasks;

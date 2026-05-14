@@ -339,7 +339,7 @@ class _SigninScreenState extends State<SigninScreen> {
     );
   }
 
-  void _handleCreateAccount() {
+  Future<void> _handleCreateAccount() async {
     // Validate passwords
     if (_passwordController.text.isEmpty) {
       setState(() => _fieldError = "Password is required");
@@ -357,16 +357,20 @@ class _SigninScreenState extends State<SigninScreen> {
     setState(() => _fieldError = null);
 
     // Try to sign up
-    bool success = AuthService.signUp(
-      _usernameController.text,
-      _emailController.text,
-      _passwordController.text,
+    final success = await AuthService.signUp(
+      username: _usernameController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
+      contactNumber: _contactNumberController.text,
     );
 
     if (success) {
+      if (!mounted) return;
       Navigator.pushReplacementNamed(context, AppRouter.login);
     } else {
-      setState(() => _fieldError = "Email already exists");
+      setState(
+        () => _fieldError = "Unable to create account. Please try again.",
+      );
     }
   }
 

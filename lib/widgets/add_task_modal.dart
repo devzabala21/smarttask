@@ -1,20 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/label_service.dart';
 import '../core/app_colors.dart';
-
-class TaskData {
-  final String title;
-  final String description;
-  final String statusTag;
-  final String label;
-
-  TaskData({
-    required this.title,
-    required this.description,
-    String? statusTag,
-    this.label = '',
-  }) : statusTag = label.isNotEmpty ? label : (statusTag ?? 'To Do');
-}
+import '../models/task_model.dart';
 
 Future<TaskData?> showAddTaskDialog(BuildContext context) {
   final TextEditingController titleController = TextEditingController();
@@ -106,7 +93,10 @@ Future<TaskData?> showAddTaskDialog(BuildContext context) {
                       },
                       decoration: const InputDecoration(
                         hintText: 'Enter task title (4-32 chars)',
-                        hintStyle: TextStyle(color: AppColors.grey, fontSize: 14),
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                          fontSize: 14,
+                        ),
                         counterText:
                             "", // Hide the default counter if you want it cleaner
                         enabledBorder: UnderlineInputBorder(
@@ -142,7 +132,10 @@ Future<TaskData?> showAddTaskDialog(BuildContext context) {
                       keyboardType: TextInputType.multiline,
                       decoration: const InputDecoration(
                         hintText: 'Enter task description (optional)',
-                        hintStyle: TextStyle(color: AppColors.grey, fontSize: 14),
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                          fontSize: 14,
+                        ),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
                             color: AppColors.accentDark,
@@ -208,7 +201,8 @@ Future<TaskData?> showAddTaskDialog(BuildContext context) {
                               backgroundColor: isValid
                                   ? AppColors.accentDark
                                   : AppColors.accentLighter,
-                              disabledBackgroundColor: AppColors.accentLighter.withOpacity(0.5),
+                              disabledBackgroundColor: AppColors.accentLighter
+                                  .withValues(alpha: 0.5),
                               foregroundColor: AppColors.white,
                               elevation: 0,
                               shape: RoundedRectangleBorder(
@@ -331,7 +325,10 @@ Future<TaskData?> showEditTaskDialog(BuildContext context, TaskData task) {
                       },
                       decoration: const InputDecoration(
                         hintText: 'Enter task title (4-32 chars)',
-                        hintStyle: TextStyle(color: AppColors.grey, fontSize: 14),
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                          fontSize: 14,
+                        ),
                         counterText: "",
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
@@ -364,7 +361,10 @@ Future<TaskData?> showEditTaskDialog(BuildContext context, TaskData task) {
                       keyboardType: TextInputType.multiline,
                       decoration: const InputDecoration(
                         hintText: 'Enter task description (optional)',
-                        hintStyle: TextStyle(color: AppColors.grey, fontSize: 14),
+                        hintStyle: TextStyle(
+                          color: AppColors.grey,
+                          fontSize: 14,
+                        ),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
                             color: AppColors.accentDark,
@@ -428,7 +428,8 @@ Future<TaskData?> showEditTaskDialog(BuildContext context, TaskData task) {
                               backgroundColor: isValid
                                   ? AppColors.accentDark
                                   : AppColors.accentLighter,
-                              disabledBackgroundColor: AppColors.accentLighter.withOpacity(0.5),
+                              disabledBackgroundColor: AppColors.accentLighter
+                                  .withValues(alpha: 0.5),
                               foregroundColor: AppColors.white,
                               elevation: 0,
                               shape: RoundedRectangleBorder(

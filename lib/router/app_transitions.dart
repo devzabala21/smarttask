@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class AppTransitions {
-
   static Route slideUp(Widget page) {
     return _createRoute(page, const Offset(0, 1));
   }

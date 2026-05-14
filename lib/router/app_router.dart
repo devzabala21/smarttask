@@ -8,7 +8,6 @@ import '../screens/onboarding.dart';
 import '../screens/home.dart';
 import '../screens/label.dart';
 
-
 class AppRouter {
   static const String splash = '/splash';
   static const String login = '/login';
@@ -19,11 +18,10 @@ class AppRouter {
   static const String label = '/label';
 
   static const String defaultRoute = '/';
-  
-  static Route<dynamic> generateRoute(RouteSettings settings) {
 
+  static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case splash: 
+      case splash:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
 
       case login:
@@ -39,8 +37,8 @@ class AppRouter {
       case onboarding:
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
 
-      case home: 
-      return MaterialPageRoute(builder: (_) => const HomeScreen());
+      case home:
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
 
       case label:
         return MaterialPageRoute(builder: (_) => const LabelScreen());
@@ -49,5 +47,4 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }
   }
-  
 }

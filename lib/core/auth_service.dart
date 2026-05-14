@@ -1,69 +1,136 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:firebase_core/firebase_core.dart';
+import '../firebase_options.dart';
 import '../models/user_model.dart';
+import 'label_service.dart';
 
 class AuthService {
+  static final fb_auth.FirebaseAuth _auth = fb_auth.FirebaseAuth.instance;
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   static const List<String> avatarOptions = [
     'assets/img/img_icon_01-240x.png',
     'assets/img/img_icon_02-200x.png',
   ];
 
-  static final List<User> _registeredUsers = [
-    User(
-      username: 'Admin',
-      email: 'test@test.com',
-      password: '12345678',
-      bio: 'My Tasks',
-      avatarPath: 'assets/img/img_icon_01-240x.png',
-    ),
-  ];
-
   static User? currentUser;
 
-  // Sign Up Logic
-  static bool signUp(String username, String email, String password) {
-    if (_registeredUsers.any((u) => u.email == email)) return false;
+  static Future<void> initialize() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
 
-    _registeredUsers.add(
-      User(
-        username: username,
+  static String avatarAssetForIndex(int index) {
+    switch (index) {
+      case 0:
+        return 'assets/img/img_icon_01-240x.png';
+      case 1:
+        return 'assets/img/img_icon_02-200x.png';
+      default:
+        return avatarOptions.first;
+    }
+  }
+
+  static int avatarIndexForPath(String path) {
+    switch (path) {
+      case 'assets/img/img_icon_01-240x.png':
+        return 0;
+      case 'assets/img/img_icon_02-200x.png':
+        return 1;
+      default:
+        return 0;
+    }
+  }
+
+  static Future<bool> signUp({
+    required String username,
+    required String email,
+    required String password,
+    required String contactNumber,
+  }) async {
+    try {
+      final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
-      ),
-    );
+      );
+
+      final uid = credential.user?.uid;
+      if (uid == null) return false;
+
+      final user = User(
+        uid: uid,
+        username: username,
+        email: email,
+        bio: 'My Tasks',
+        iconIndex: 0,
+        contactNumber: contactNumber,
+      );
+
+      await _firestore.collection('users').doc(uid).set(user.toMap());
+      currentUser = user;
+      await LabelService.loadLabelsForUser(uid);
+      return true;
+    } on fb_auth.FirebaseAuthException {
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static Future<bool> login(String email, String password) async {
+    try {
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final uid = credential.user?.uid;
+      if (uid == null) return false;
+
+      return await _loadCurrentUser(uid);
+    } on fb_auth.FirebaseAuthException {
+      return false;
+    }
+  }
+
+  static Future<bool> _loadCurrentUser(String uid) async {
+    final snapshot = await _firestore.collection('users').doc(uid).get();
+    if (!snapshot.exists || snapshot.data() == null) return false;
+
+    final data = snapshot.data()!;
+    final email = data['email'] as String? ?? _auth.currentUser?.email ?? '';
+    currentUser = User.fromMap(uid, data, email: email);
+    await LabelService.loadLabelsForUser(uid);
     return true;
   }
 
-  static bool updateProfile({
+  static Future<bool> updateProfile({
     required String username,
     required String bio,
-    required String avatarPath,
-  }) {
+    required int iconIndex,
+  }) async {
     final current = currentUser;
     if (current == null) return false;
 
     final updatedUser = current.copyWith(
       username: username,
       bio: bio,
-      avatarPath: avatarPath,
+      iconIndex: iconIndex,
     );
 
-    final index = _registeredUsers.indexWhere((u) => u.email == current.email);
-    if (index < 0) return false;
+    await _firestore
+        .collection('users')
+        .doc(current.uid)
+        .update(updatedUser.toMap());
 
-    _registeredUsers[index] = updatedUser;
     currentUser = updatedUser;
     return true;
   }
 
-  // Login Logic
-  static bool login(String email, String password) {
-    try {
-      final user = _registeredUsers.firstWhere(
-        (u) => u.email == email && u.password == password
-      );
-      currentUser = user;
-      return true;
-    } catch (e) {
-      return false;
-    }
+  static Future<void> signOut() async {
+    await _auth.signOut();
+    currentUser = null;
   }
 }

@@ -1,31 +1,60 @@
 class User {
+  final String uid;
   final String username;
   final String email;
-  final String password;
   final String bio;
-  final String avatarPath;
+  final int iconIndex;
+  final String contactNumber;
 
   User({
+    required this.uid,
     required this.username,
     required this.email,
-    required this.password,
     this.bio = 'My Tasks',
-    this.avatarPath = 'assets/img/img_icon_01-240x.png',
+    this.iconIndex = 0,
+    this.contactNumber = '',
   });
 
   User copyWith({
+    String? uid,
     String? username,
     String? email,
-    String? password,
     String? bio,
-    String? avatarPath,
+    int? iconIndex,
+    String? contactNumber,
   }) {
     return User(
+      uid: uid ?? this.uid,
       username: username ?? this.username,
       email: email ?? this.email,
-      password: password ?? this.password,
       bio: bio ?? this.bio,
-      avatarPath: avatarPath ?? this.avatarPath,
+      iconIndex: iconIndex ?? this.iconIndex,
+      contactNumber: contactNumber ?? this.contactNumber,
     );
+  }
+
+  factory User.fromMap(
+    String uid,
+    Map<String, dynamic> data, {
+    required String email,
+  }) {
+    return User(
+      uid: uid,
+      username: data['username'] as String? ?? '',
+      email: email,
+      bio: data['bio'] as String? ?? 'My Tasks',
+      iconIndex: data['icon_index'] as int? ?? 0,
+      contactNumber: data['contact_number'] as String? ?? '',
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'username': username,
+      'bio': bio,
+      'email': email,
+      'icon_index': iconIndex,
+      'contact_number': contactNumber,
+    };
   }
 }
