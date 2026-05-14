@@ -129,6 +129,127 @@ class AuthService {
     return true;
   }
 
+  static Future<bool> updateContactNumber(String contactNumber) async {
+    final current = currentUser;
+    if (current == null) return false;
+
+    final updatedUser = current.copyWith(contactNumber: contactNumber);
+
+    await _firestore
+        .collection('users')
+        .doc(current.uid)
+        .update({'contact_number': contactNumber});
+
+    currentUser = updatedUser;
+    return true;
+  }
+
+  static Future<bool> updateEmail(String newEmail, String currentPassword) async {
+    try {
+      final fb_auth.User? user = _auth.currentUser;
+      if (user == null || currentUser == null) return false;
+
+      // Re-authenticate user before email change
+      final credential = fb_auth.EmailAuthProvider.credential(
+        email: currentUser!.email,
+        password: currentPassword,
+      );
+      await user.reauthenticateWithCredential(credential);
+
+      // Update email in Firebase Auth
+      await (user as dynamic).updateEmail(newEmail);
+
+      // Update email in Firestore
+      await _firestore
+          .collection('users')
+          .doc(currentUser!.uid)
+          .update({'email': newEmail});
+
+      currentUser = currentUser!.copyWith(email: newEmail);
+      return true;
+    } on fb_auth.FirebaseAuthException {
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static Future<bool> updatePassword(String newPassword, String currentPassword) async {
+    try {
+      final fb_auth.User? user = _auth.currentUser;
+      if (user == null || currentUser == null) return false;
+
+      // Re-authenticate user before password change
+      final credential = fb_auth.EmailAuthProvider.credential(
+        email: currentUser!.email,
+        password: currentPassword,
+      );
+      await user.reauthenticateWithCredential(credential);
+
+      // Update password in Firebase Auth
+      await (user as dynamic).updatePassword(newPassword);
+      return true;
+    } on fb_auth.FirebaseAuthException {
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static Future<bool> deleteAccount(String currentPassword) async {
+    try {
+      final fb_auth.User? user = _auth.currentUser;
+      if (user == null || currentUser == null) return false;
+
+      // Re-authenticate user before account deletion
+      final credential = fb_auth.EmailAuthProvider.credential(
+        email: currentUser!.email,
+        password: currentPassword,
+      );
+      await user.reauthenticateWithCredential(credential);
+
+      final uid = currentUser!.uid;
+
+      // Delete all user data from Firestore
+      final batch = _firestore.batch();
+
+      // Delete tasks
+      final tasksQuery = await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('tasks')
+          .get();
+      for (final doc in tasksQuery.docs) {
+        batch.delete(doc.reference);
+      }
+
+      // Delete labels
+      final labelsQuery = await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('labels')
+          .get();
+      for (final doc in labelsQuery.docs) {
+        batch.delete(doc.reference);
+      }
+
+      // Delete user document
+      batch.delete(_firestore.collection('users').doc(uid));
+
+      await batch.commit();
+
+      // Delete user from Firebase Auth
+      await (user as dynamic).delete();
+
+      currentUser = null;
+      return true;
+    } on fb_auth.FirebaseAuthException {
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   static Future<void> signOut() async {
     await _auth.signOut();
     currentUser = null;
